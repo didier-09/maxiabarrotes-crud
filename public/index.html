@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Maxi Abarrotes - Sistema de Inventarios</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+        crossorigin="anonymous"> <!-- [web:20] -->
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root{
+      --primary-green: #2c5f2d;
+      --primary-green-dark: #234b23;
+      --logo-blue: #1a78c8;
+      --logo-green: #2fa34a;
+      --logo-dark: #0e4a72;
+      --accent-orange: #ff8c42;
+      --light-bg: #f4f7f5;
+    }
+
+    body{
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--light-bg);
+    }
+
+    .navbar{
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .navbar-brand span{
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--logo-blue);
+    }
+
+    .logo-circle{
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--logo-blue), var(--logo-green));
+      border: 2px solid rgba(255,255,255,0.7);
+    }
+
+    .logo-circle span{
+      font-weight: 700;
+      color: #fff;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .logo-img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #fff;
+      padding: 3px;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .btn-login{
+      border-radius: 50px;
+      font-weight: 500;
+      padding: 0.45rem 1.2rem;
+    }
+
+    .hero-section{
+      padding: 4rem 0 3rem 0;
+    }
+
+    .hero-badge{
+      background-color: rgba(44,95,45,0.08);
+      color: #111;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .hero-title{
+      color: #111;
+      font-weight: 700;
+    }
+
+    .hero-highlight{
+      color: var(--logo-blue);
+    }
+
+    .hero-description{
+      color: #5c5c5c;
+      max-width: 480px;
+    }
+
+    .hero-card{
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 1.5rem;
+      box-shadow: 0 12px 45px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .metric-card{
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 1rem 1.2rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.03);
+      height: 100%;
+    }
+
+    .metric-value{
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .metric-label{
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #777;
+    }
+
+    .feature-card{
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 1.4rem;
+      border: 1px solid rgba(0,0,0,0.03);
+      height: 100%;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .feature-card:hover{
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.06);
+      border-color: rgba(44,95,45,0.25);
+    }
+
+    .feature-icon{
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      background-color: rgba(44,95,45,0.08);
+      color: #111;
+    }
+
+    .section-title{
+      color: #111;
+      font-weight: 600;
+    }
+
+    footer{
+      margin-top: 3rem;
+      background-color: #1c2520;
+      color: #d9e2dd;
+      padding: 2.5rem 0 1.5rem 0;
+    }
+
+    footer a{
+      color: #d9e2dd;
+      text-decoration: none;
+    }
+
+    footer a:hover{
+      color: var(--accent-orange);
+    }
+
+    .footer-brand{
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* Offcanvas login (panel lateral derecho) */
+    .offcanvas-end{
+      width: 360px;
+      max-width: 100%;
+    }
+
+    .login-header{
+      color: #111;
+      font-weight: 600;
+    }
+
+    .form-label{
+      font-size: 0.9rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus{
+      border-color: var(--accent-orange);
+      box-shadow: 0 0 0 0.15rem rgba(255,140,66,0.25);
+    }
+
+    .btn-primary{
+      background-color: var(--logo-blue);
+      border-color: var(--logo-blue);
+    }
+
+    .btn-primary:hover{
+      background-color: #0f5ca8;
+      border-color: #0f5ca8;
+    }
+
+    .btn-outline-primary{
+      color: var(--logo-blue);
+      border-color: var(--logo-blue);
+    }
+
+    .btn-outline-primary:hover{
+      background-color: var(--primary-green);
+      color: #fff;
+    }
+
+    .role-badges .badge{
+      cursor: pointer;
+      border-radius: 50px;
+      padding: 0.4rem 0.8rem;
+      font-weight: 500;
+    }
+
+    .role-badges .badge:hover{
+      background-color: rgba(44,95,45,0.09);
+      color: var(--primary-green-dark);
+    }
+
+    @media (max-width: 767.98px){
+      .hero-section{
+        padding-top: 3rem;
+      }
+      .hero-title{
+        font-size: 1.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="logo.png" alt="Logo Maxi Abarrotes" class="logo-img me-2" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';">
+      <div class="logo-circle me-2" style="display:none;">
+        <span>M</span>
+      </div>
+      <span>Maxi Abarrotes</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarMain" aria-controls="navbarMain"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#inicio">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#modulos">Módulos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#beneficios">Beneficios</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#contacto">Contacto</a>
+        </li>
+      </ul>
+
+      <!-- Botón de iniciar sesión en costado -->
+      <div class="d-flex">
+        <button class="btn btn-outline-primary btn-login"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasLogin"
+                aria-controls="offcanvasLogin">
+          Iniciar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO + MÉTRICAS -->
+<section class="hero-section" id="inicio">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <div class="hero-badge mb-3">
+          <span class="badge bg-success rounded-pill" style="font-size:0.7rem;">Nuevo</span>
+          <span>Sistema contable e inventarios para abarrotes</span>
+        </div>
+        <h1 class="hero-title mb-3">
+          Controla tu <span class="hero-highlight">inventario</span> y tus cuentas
+          en un solo lugar.
+        </h1>
+        <p class="hero-description mb-4">
+          Maxi Abarrotes te ofrece una solución integrada para gestionar compras,
+          ventas, existencias y contabilidad, optimizada para minimercados,
+          tiendas y supermercados de barrio.
+        </p>
+        <div class="d-flex flex-wrap gap-2 mb-4">
+          <button class="btn btn-primary me-2"
+                  type="button"
+                  data-bs-toggle="offcanvas"
+                  data-bs-target="#offcanvasLogin">
+            Entrar al sistema
+          </button>
+          <button class="btn btn-outline-primary" type="button">
+            Ver demo
+          </button>
+        </div>
+        <div class="text-muted" style="font-size:0.85rem;">
+          Sin instalaciones complejas, acceso 24/7 desde la nube.
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="hero-card">
+          <h5 class="mb-3">Visión rápida del negocio</h5>
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <div class="metric-card">
+                <div class="metric-label">Productos en stock</div>
+                <div class="metric-value">1.248</div>
+                <small class="text-success">+12 hoy</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="metric-card">
+                <div class="metric-label">Movimientos diarios</div>
+                <div class="metric-value">356</div>
+                <small class="text-muted">Ventas y compras</small>
+              </div>
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="metric-card">
+                <div class="metric-label">Rotación promedio</div>
+                <div class="metric-value">18 días</div>
+                <small class="text-muted">Por categoría</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="metric-card">
+                <div class="metric-label">Alertas de quiebre</div>
+                <div class="metric-value">7</div>
+                <small class="text-danger">Reabastecer hoy</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MÓDULOS / FUNCIONALIDADES -->
+<section class="py-4" id="modulos">
+  <div class="container">
+    <div class="row mb-3 align-items-center">
+      <div class="col-md-8">
+        <h2 class="section-title mb-1">Módulos principales</h2>
+        <p class="text-muted mb-0">
+          Estructura pensada para el día a día de un sistema de inventarios y contabilidad.
+        </p>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon mb-3">
+            📦
+          </div>
+          <h5 class="mb-1">Gestión de inventarios</h5>
+          <p class="text-muted mb-2">
+            Control por bodegas, códigos de barras, lotes y niveles mínimos, con actualización en tiempo real por cada movimiento.
+          </p>
+          <span class="badge bg-light text-success border">
+            Kardex automático
+          </span>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon mb-3" style="background-color:rgba(255,140,66,0.16);color:var(--accent-orange);">
+            💸
+          </div>
+          <h5 class="mb-1">Ventas y facturación</h5>
+          <p class="text-muted mb-2">
+            Registro rápido de ventas, manejo de precios, descuentos y conexión con el módulo contable para generar comprobantes.
+          </p>
+          <span class="badge bg-light text-warning border">
+            Punto de venta
+          </span>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon mb-3">
+            📊
+          </div>
+          <h5 class="mb-1">Contabilidad integrada</h5>
+          <p class="text-muted mb-2">
+            Plan de cuentas, comprobantes, balances y libros auxiliares, alineados al manejo contable para pequeñas y medianas empresas.
+          </p>
+          <span class="badge bg-light text-success border">
+            Informes financieros
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFICIOS -->
+<section class="py-4" id="beneficios">
+  <div class="container">
+    <div class="row mb-3 align-items-center">
+      <div class="col-md-8">
+        <h2 class="section-title mb-1">Beneficios para Maxi Abarrotes</h2>
+        <p class="text-muted mb-0">
+          Ahorra tiempo, evita errores en el inventario y mejora la toma de decisiones con información clara.
+        </p>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Menos diferencias entre inventario físico y sistema
+            <span class="badge bg-success rounded-pill">-35%</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Visibilidad diaria de ventas y compras
+            <span class="badge bg-success rounded-pill">Tiempo real</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Alertas de productos próximos a agotarse
+            <span class="badge bg-warning rounded-pill">Automáticas</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-md-6">
+        <div class="feature-card h-100">
+          <h5 class="mb-2">Perfiles de usuario con permisos</h5>
+          <p class="text-muted mb-3">
+            Define qué pueden ver y hacer cajeros, bodegueros, administradores y contadores, manteniendo la trazabilidad de cada movimiento.
+          </p>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge bg-light text-success border">Administrador</span>
+            <span class="badge bg-light text-success border">Cajero</span>
+            <span class="badge bg-light text-success border">Bodega</span>
+            <span class="badge bg-light text-success border">Contador</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO / FOOTER -->
+<footer id="contacto">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-5">
+        <div class="footer-brand mb-2">Maxi Abarrotes</div>
+        <p class="mb-2">
+          Sistema de inventarios y contabilidad orientado a tiendas de abarrotes,
+          supermercados de barrio y pequeños comercios.
+        </p>
+        <small class="text-muted">Desarrollado como proyecto de análisis y desarrollo de software.</small>
+      </div>
+      <div class="col-md-4">
+        <h6 class="mb-2">Contacto</h6>
+        <p class="mb-1">Medellín, Antioquia - Colombia</p>
+        <p class="mb-1">Correo: contacto@maxi-abarrotes.com</p>
+        <p class="mb-0">Teléfono: +57 (000) 000 00 00</p>
+      </div>
+      <div class="col-md-3">
+        <h6 class="mb-2">Accesos rápidos</h6>
+        <ul class="list-unstyled mb-0">
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#modulos">Módulos</a></li>
+          <li><a href="#beneficios">Beneficios</a></li>
+          <li><a href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLogin">Iniciar sesión</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-secondary mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <small class="text-muted">© 2026 Maxi Abarrotes. Todos los derechos reservados.</small>
+      <small class="text-muted">Versión 1.0 - UI Maquetación</small>
+    </div>
+  </div>
+</footer>
+
+<!-- OFFCANVAS LOGIN (Panel lateral derecho) -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasLogin" aria-labelledby="offcanvasLoginLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title login-header" id="offcanvasLoginLabel">Iniciar sesión</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <p class="text-muted mb-3" style="font-size:0.9rem;">
+      Ingresa con tu usuario asignado para acceder al sistema de inventarios y contabilidad.
+    </p>
+
+    <div class="mb-3">
+      <label class="form-label">Tipo de usuario</label>
+      <div class="role-badges d-flex flex-wrap gap-2">
+        <span class="badge bg-light text-success border">Administrador</span>
+        <span class="badge bg-light text-success border">Empleado</span>
+        <span class="badge bg-light text-success border">Contador</span>
+      </div>
+    </div>
+
+    <<form id="formLogin">
+  <div class="mb-3">
+    <label for="usuario" class="form-label">Correo electrónico</label>
+    <input type="email" class="form-control" id="usuario" placeholder="correo@ejemplo.com" required>
+  </div>
+  <div class="mb-3">
+    <label for="contrasena" class="form-label">Contraseña</label>
+    <input type="password" class="form-control" id="contrasena" placeholder="Ingresa tu contraseña" required>
+  </div>
+  <div id="loginError" class="text-danger mb-2" style="display:none; font-size:0.85rem;"></div>
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="recordarme">
+        <label class="form-check-label" for="recordarme">Recordar en este equipo</label>
+      </div>
+      <button type="submit" class="btn btn-primary w-100 mb-2">Entrar</button>
+      <button type="button" class="btn btn-outline-primary w-100 mb-3">Acceder como invitado</button>
+    </form>
+
+    <div class="d-flex justify-content-between" style="font-size:0.85rem;">
+      <a href="#">Olvidé mi contraseña</a>
+      <a href="#">Solicitar usuario</a>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script> <!-- [web:20] -->
+        <script>
+  const formLogin = document.getElementById("formLogin");
+  const loginError = document.getElementById("loginError");
+
+  formLogin.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    loginError.style.display = "none";
+
+    const email = document.getElementById("usuario").value;
+    const contrasena = document.getElementById("contrasena").value;
+
+    try {
+      const respuesta = await fetch("/usuarios/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Email: email, Contrasena: contrasena }),
+      });
+
+      const datos = await respuesta.json();
+
+      if (!respuesta.ok) {
+        loginError.textContent = datos.mensaje || "No se pudo iniciar sesión.";
+        loginError.style.display = "block";
+        return;
+      }
+
+      // Guardamos los datos del usuario para usarlos en otras páginas
+      sessionStorage.setItem("usuario", JSON.stringify(datos));
+
+      // Redirigimos al dashboard (lo crearemos en el siguiente paso)
+      window.location.href = "/dashboard.html";
+    } catch (error) {
+      loginError.textContent = "No se pudo conectar con el servidor.";
+      loginError.style.display = "block";
+    }
+  });
+</script>
+</body>
+</html>
