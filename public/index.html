@@ -603,7 +603,13 @@
       sessionStorage.setItem("usuario", JSON.stringify(datos));
 
       // Redirigimos al dashboard (lo crearemos en el siguiente paso)
-      window.location.href = "/dashboard.html";
+      if (datos.Rol === "Empleado") {
+  window.location.href = "/ventas.html";
+} else if (datos.Rol === "Contador") {
+  window.location.href = "/contabilidad.html";
+} else {
+  window.location.href = "/dashboard.html";
+}
     } catch (error) {
       loginError.textContent = "No se pudo conectar con el servidor.";
       loginError.style.display = "block";
