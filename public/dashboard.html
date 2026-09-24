@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
     :root{
       --logo-blue: #1a78c8;
@@ -46,10 +46,19 @@
       text-decoration: none;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      padding: 0.7rem 1.2rem;
+      gap: 0.7rem;
+      padding: 0.75rem 1.2rem;
       border-radius: 8px;
-      margin: 0.2rem 0.6rem;
+      margin: 0.25rem 0.7rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .sidebar a i{
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
     }
 
     .sidebar a:hover,
@@ -93,11 +102,11 @@
   <!-- Sidebar -->
   <nav class="sidebar" style="width:230px;">
     <div class="brand">Maxi Abarrotes</div>
-    <a href="/dashboard.html" class="active">📊 Dashboard</a>
-    <a href="/productos.html">📦 Productos</a>
-    <a href="/categorias.html">🏷️ Categorías</a>
-    <a href="/proveedores.html">🚚 Proveedores</a>
-    <a href="#" id="btnLogout">🚪 Cerrar sesión</a>
+    <a href="/dashboard.html" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="/productos.html"><i class="bi bi-box-seam"></i> Productos</a>
+    <a href="/categorias.html"><i class="bi bi-tags"></i> Categorías</a>
+    <a href="/proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+    <a href="#" id="btnLogout"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
   </nav>
 
   <!-- Contenido -->

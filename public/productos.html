@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Productos - Maxi Abarrotes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body{ font-family:'Poppins', sans-serif; background:#f4f7f5; padding:2rem; }
+    .btn-primary{ background-color:#1a78c8; border-color:#1a78c8; }
+    .btn-primary:hover{ background-color:#0f5ca8; border-color:#0f5ca8; }
+    .card-tabla{ background:#fff; border-radius:14px; padding:1.5rem; box-shadow:0 6px 20px rgba(0,0,0,0.04); }
+    .badge-bajo{ background:#dc3545; }
+    .badge-ok{ background:#2fa34a; }
+  </style>
+</head>
+<body>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Gestión de Productos</h3>
+  <div>
+    <a href="/dashboard.html" class="btn btn-outline-secondary btn-sm">← Dashboard</a>
+    <button class="btn btn-primary btn-sm" onclick="abrirModal()">+ Nuevo producto</button>
+  </div>
+</div>
+
+<div id="mensajeError" class="alert alert-danger" style="display:none;"></div>
+
+<div class="card-tabla">
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th>Nombre</th><th>Código</th><th>Categoría</th><th>Proveedor</th>
+        <th>P. Compra</th><th>P. Venta</th><th>Stock</th><th></th>
+      </tr>
+    </thead>
+    <tbody id="tablaProductos"></tbody>
+  </table>
+</div>
+
+<!-- Modal Crear/Editar -->
+<div class="modal fade" id="modalProducto" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tituloModal">Nuevo producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="mensajeModalError" class="alert alert-danger" style="display:none;"></div>
+        <form id="formProducto">
+          <input type="hidden" id="idProducto">
+          <div class="mb-2">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Código de barras</label>
+            <input type="text" class="form-control" id="codigoBarras" required>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Categoría</label>
+              <select class="form-select" id="idCategoria" required></select>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Proveedor</label>
+              <select class="form-select" id="idProveedor" required></select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Precio compra</label>
+              <input type="number" step="0.01" class="form-control" id="precioCompra" required>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Precio venta</label>
+              <input type="number" step="0.01" class="form-control" id="precioVenta" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Stock actual</label>
+              <input type="number" class="form-control" id="stockActual" required>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Stock mínimo</label>
+              <input type="number" class="form-control" id="stockMinimo" required>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarProducto()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Protección de sesión
+  const usuarioGuardado = sessionStorage.getItem("usuario");
+  if (!usuarioGuardado) window.location.href = "/index.html";
+  const usuarioActual = JSON.parse(usuarioGuardado || "{}");
+
+  const modalProducto = new bootstrap.Modal(document.getElementById("modalProducto"));
+  let categorias = [];
+  let proveedores = [];
+
+  async function cargarCategoriasYProveedores() {
+    categorias = await fetch("/categorias").then(r => r.json());
+    proveedores = await fetch("/proveedores").then(r => r.json());
+
+    const selectCat = document.getElementById("idCategoria");
+    selectCat.innerHTML = categorias
+      .map(c => `<option value="${c.IDCategoria}">${c.Nombre}</option>`)
+      .join("");
+
+    const selectProv = document.getElementById("idProveedor");
+    selectProv.innerHTML = proveedores
+      .map(p => `<option value="${p.IDProveedor}">${p.Nombre}</option>`)
+      .join("");
+  }
+
+  async function cargarProductos() {
+    const productos = await fetch("/productos").then(r => r.json());
+    const tbody = document.getElementById("tablaProductos");
+    tbody.innerHTML = "";
+    productos.forEach(p => {
+      const bajo = Number(p.StockActual) <= Number(p.StockMinimo);
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.Nombre}</td>
+          <td>${p.CodigoBarras}</td>
+          <td>${p.Categoria}</td>
+          <td>${p.Proveedor}</td>
+          <td>$${Number(p.PrecioCompra).toLocaleString()}</td>
+          <td>$${Number(p.PrecioVenta).toLocaleString()}</td>
+          <td><span class="badge ${bajo ? "badge-bajo" : "badge-ok"}">${p.StockActual}</span></td>
+          <td>
+            <button class="btn btn-outline-primary btn-sm" onclick="editarProducto(${p.IDProducto})">Editar</button>
+            <button class="btn btn-outline-danger btn-sm" onclick="eliminarProducto(${p.IDProducto})">Eliminar</button>
+          </td>
+        </tr>`;
+    });
+  }
+
+  function abrirModal() {
+    document.getElementById("tituloModal").textContent = "Nuevo producto";
+    document.getElementById("formProducto").reset();
+    document.getElementById("idProducto").value = "";
+    document.getElementById("mensajeModalError").style.display = "none";
+    modalProducto.show();
+  }
+
+  async function editarProducto(id) {
+    const producto = await fetch(`/productos/${id}`).then(r => r.json());
+    document.getElementById("tituloModal").textContent = "Editar producto";
+    document.getElementById("idProducto").value = producto.IDProducto;
+    document.getElementById("nombre").value = producto.Nombre;
+    document.getElementById("codigoBarras").value = producto.CodigoBarras;
+    document.getElementById("precioCompra").value = producto.PrecioCompra;
+    document.getElementById("precioVenta").value = producto.PrecioVenta;
+    document.getElementById("stockActual").value = producto.StockActual;
+    document.getElementById("stockMinimo").value = producto.StockMinimo;
+
+    const cat = categorias.find(c => c.Nombre === producto.Categoria);
+    if (cat) document.getElementById("idCategoria").value = cat.IDCategoria;
+    const prov = proveedores.find(p => p.Nombre === producto.Proveedor);
+    if (prov) document.getElementById("idProveedor").value = prov.IDProveedor;
+
+    document.getElementById("mensajeModalError").style.display = "none";
+    modalProducto.show();
+  }
+
+  async function guardarProducto() {
+    const id = document.getElementById("idProducto").value;
+    const datos = {
+      Nombre: document.getElementById("nombre").value,
+      CodigoBarras: document.getElementById("codigoBarras").value,
+      IDCategoria: Number(document.getElementById("idCategoria").value),
+      IDProveedor: Number(document.getElementById("idProveedor").value),
+      PrecioCompra: Number(document.getElementById("precioCompra").value),
+      PrecioVenta: Number(document.getElementById("precioVenta").value),
+      StockActual: Number(document.getElementById("stockActual").value),
+      StockMinimo: Number(document.getElementById("stockMinimo").value),
+      IDUsuario: usuarioActual.IDUsuario,
+    };
+
+    const url = id ? `/productos/${id}` : "/productos";
+    const metodo = id ? "PUT" : "POST";
+
+    const respuesta = await fetch(url, {
+      method: metodo,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos),
+    });
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+      const errorDiv = document.getElementById("mensajeModalError");
+      errorDiv.textContent = resultado.errores ? resultado.errores.join(" ") : resultado.mensaje;
+      errorDiv.style.display = "block";
+      return;
+    }
+
+    modalProducto.hide();
+    cargarProductos();
+  }
+
+  async function eliminarProducto(id) {
+    if (!confirm("¿Eliminar este producto?")) return;
+    await fetch(`/productos/${id}`, { method: "DELETE" });
+    cargarProductos();
+  }
+
+  (async function init() {
+    await cargarCategoriasYProveedores();
+    await cargarProductos();
+  })();
+</script>
+</body>
+</html>
