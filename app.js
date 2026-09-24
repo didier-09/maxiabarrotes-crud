@@ -1,7 +1,12 @@
 // app.js
+require("dotenv").config();
 const express = require("express");
+const helmet = require("helmet");
 const app = express();
+
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.static("public"));
+
 const productoRoutes = require("./routes/productoRoutes");
 const categoriaRoutes = require("./routes/categoriaRoutes");
 const proveedorRoutes = require("./routes/proveedorRoutes");
@@ -15,7 +20,7 @@ app.use("/categorias", categoriaRoutes);
 app.use("/proveedores", proveedorRoutes);
 app.use("/usuarios", usuarioRoutes);
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });

@@ -101,16 +101,25 @@ const UsuarioController = {
     }
   },
 
-  async login(req, res) {
+async login(req, res) {
     const { Email, Contrasena } = req.body;
-    if (!Email || !Contrasena) {
-      return res
-        .status(400)
-        .json({ mensaje: "Email y contraseña son obligatorios." });
+
+    // Validación de formato de entrada
+    const emailValido = typeof Email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(Email);
+    const contrasenaValida = typeof Contrasena === "string" && Contrasena.length >= 6;
+
+    if (!emailValido || !contrasenaValida) {
+      return res.status(400).json({ mensaje: "Correo o contraseña con formato inválido." });
     }
 
     const usuario = await Usuario.buscarPorEmail(Email);
+
+    // Mensaje genérico: no revelamos si falló por el email o por la contraseña
     if (!usuario) {
+      return res.status(401).json({ mensaje: "Credenciales inválidas." });
+    }
+
+    if (usuario.Estado !== "Activo") {
       return res.status(401).json({ mensaje: "Credenciales inválidas." });
     }
 
@@ -119,7 +128,7 @@ const UsuarioController = {
       return res.status(401).json({ mensaje: "Credenciales inválidas." });
     }
 
-    res.json({
+        res.json({
       IDUsuario: usuario.IDUsuario,
       Nombre: usuario.Nombre,
       Email: usuario.Email,
