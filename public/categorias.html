@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Categorías - Maxi Abarrotes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body{ font-family:'Poppins', sans-serif; background:#f4f7f5; padding:2rem; }
+    .btn-primary{ background-color:#1a78c8; border-color:#1a78c8; }
+    .btn-primary:hover{ background-color:#0f5ca8; border-color:#0f5ca8; }
+    .card-tabla{ background:#fff; border-radius:14px; padding:1.5rem; box-shadow:0 6px 20px rgba(0,0,0,0.04); }
+  </style>
+</head>
+<body>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0"><i class="bi bi-tags"></i> Gestión de Categorías</h3>
+  <div>
+    <a href="/dashboard.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Dashboard</a>
+    <button class="btn btn-primary btn-sm" onclick="abrirModal()"><i class="bi bi-plus-lg"></i> Nueva categoría</button>
+  </div>
+</div>
+
+<div class="card-tabla">
+  <table class="table table-hover align-middle">
+    <thead><tr><th>Nombre</th><th>Descripción</th><th>Estado</th><th></th></tr></thead>
+    <tbody id="tablaCategorias"></tbody>
+  </table>
+</div>
+
+<div class="modal fade" id="modalCategoria" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tituloModal">Nueva categoría</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="mensajeModalError" class="alert alert-danger" style="display:none;"></div>
+        <form id="formCategoria">
+          <input type="hidden" id="idCategoria">
+          <div class="mb-2">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-control" id="descripcion"></textarea>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Estado</label>
+            <select class="form-select" id="estado">
+              <option value="Activa">Activa</option>
+              <option value="Inactiva">Inactiva</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarCategoria()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  if (!sessionStorage.getItem("usuario")) window.location.href = "/index.html";
+
+  const modalCategoria = new bootstrap.Modal(document.getElementById("modalCategoria"));
+
+  async function cargarCategorias() {
+    const categorias = await fetch("/categorias").then(r => r.json());
+    const tbody = document.getElementById("tablaCategorias");
+    tbody.innerHTML = "";
+    categorias.forEach(c => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${c.Nombre}</td>
+          <td>${c.Descripcion || ""}</td>
+          <td>${c.Estado}</td>
+          <td>
+            <button class="btn btn-outline-primary btn-sm" onclick="editarCategoria(${c.IDCategoria})"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-outline-danger btn-sm" onclick="eliminarCategoria(${c.IDCategoria})"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>`;
+    });
+  }
+
+  function abrirModal() {
+    document.getElementById("tituloModal").textContent = "Nueva categoría";
+    document.getElementById("formCategoria").reset();
+    document.getElementById("idCategoria").value = "";
+    document.getElementById("mensajeModalError").style.display = "none";
+    modalCategoria.show();
+  }
+
+  async function editarCategoria(id) {
+    const categoria = await fetch(`/categorias/${id}`).then(r => r.json());
+    document.getElementById("tituloModal").textContent = "Editar categoría";
+    document.getElementById("idCategoria").value = categoria.IDCategoria;
+    document.getElementById("nombre").value = categoria.Nombre;
+    document.getElementById("descripcion").value = categoria.Descripcion || "";
+    document.getElementById("estado").value = categoria.Estado;
+    document.getElementById("mensajeModalError").style.display = "none";
+    modalCategoria.show();
+  }
+
+  async function guardarCategoria() {
+    const id = document.getElementById("idCategoria").value;
+    const datos = {
+      Nombre: document.getElementById("nombre").value,
+      Descripcion: document.getElementById("descripcion").value,
+      Estado: document.getElementById("estado").value,
+    };
+
+    const url = id ? `/categorias/${id}` : "/categorias";
+    const metodo = id ? "PUT" : "POST";
+
+    const respuesta = await fetch(url, {
+      method: metodo,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos),
+    });
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+      const errorDiv = document.getElementById("mensajeModalError");
+      errorDiv.textContent = resultado.errores ? resultado.errores.join(" ") : resultado.mensaje;
+      errorDiv.style.display = "block";
+      return;
+    }
+
+    modalCategoria.hide();
+    cargarCategorias();
+  }
+
+  async function eliminarCategoria(id) {
+    if (!confirm("¿Eliminar esta categoría?")) return;
+    await fetch(`/categorias/${id}`, { method: "DELETE" });
+    cargarCategorias();
+  }
+
+  cargarCategorias();
+</script>
+</body>
+</html>
