@@ -15,244 +15,86 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
-    rel="stylesheet">
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/estilos.css">
 
-  <style>
-    :root{
-      --primary-green: #2c5f2d;
-      --primary-green-dark: #234b23;
-      --logo-blue: #1a78c8;
-      --logo-green: #2fa34a;
-      --logo-dark: #0e4a72;
-      --accent-orange: #ff8c42;
-      --light-bg: #f4f7f5;
-    }
-
-    body{
-      font-family: 'Poppins', sans-serif;
-      background-color: var(--light-bg);
-    }
-
-    .navbar{
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-
-    .navbar-brand span{
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      color: var(--logo-blue);
-    }
-
-    .logo-circle{
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, var(--logo-blue), var(--logo-green));
-      border: 2px solid rgba(255,255,255,0.7);
-    }
-
-    .logo-circle span{
-      font-weight: 700;
-      color: #fff;
-      font-size: 1rem;
-      line-height: 1;
-    }
-
-    .logo-img {
-      width: 36px;
-      height: 36px;
-      object-fit: contain;
-      border-radius: 6px;
-      background: #fff;
-      padding: 3px;
-      border: 1px solid rgba(0,0,0,0.08);
-    }
-
-    .btn-login{
-      border-radius: 50px;
-      font-weight: 500;
-      padding: 0.45rem 1.2rem;
-    }
-
-    .hero-section{
-      padding: 4rem 0 3rem 0;
-    }
-
-    .hero-badge{
-      background-color: rgba(44,95,45,0.08);
-      color: #111;
-      border-radius: 30px;
-      font-size: 0.85rem;
-      padding: 0.35rem 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .hero-title{
-      color: #111;
-      font-weight: 700;
-    }
-
-    .hero-highlight{
-      color: var(--logo-blue);
-    }
-
-    .hero-description{
-      color: #5c5c5c;
-      max-width: 480px;
-    }
-
-    .hero-card{
-      background: #ffffff;
-      border-radius: 18px;
-      padding: 1.5rem;
-      box-shadow: 0 12px 45px rgba(0,0,0,0.06);
-      border: 1px solid rgba(0,0,0,0.03);
-    }
-
-    .metric-card{
-      background: #ffffff;
-      border-radius: 14px;
-      padding: 1rem 1.2rem;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.04);
-      border: 1px solid rgba(0,0,0,0.03);
-      height: 100%;
-    }
-
-    .metric-value{
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #111;
-    }
-
-    .metric-label{
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #777;
-    }
-
-    .feature-card{
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 1.4rem;
-      border: 1px solid rgba(0,0,0,0.03);
-      height: 100%;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-    }
-
-    .feature-card:hover{
-      transform: translateY(-3px);
-      box-shadow: 0 12px 35px rgba(0,0,0,0.06);
-      border-color: rgba(44,95,45,0.25);
-    }
-
-    .feature-icon{
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      background-color: rgba(44,95,45,0.08);
-      color: #111;
-    }
-
-    .section-title{
-      color: #111;
-      font-weight: 600;
-    }
-
-    footer{
-      margin-top: 3rem;
-      background-color: #1c2520;
-      color: #d9e2dd;
-      padding: 2.5rem 0 1.5rem 0;
-    }
-
-    footer a{
-      color: #d9e2dd;
-      text-decoration: none;
-    }
-
-    footer a:hover{
-      color: var(--accent-orange);
-    }
-
-    .footer-brand{
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    /* Offcanvas login (panel lateral derecho) */
-    .offcanvas-end{
-      width: 360px;
-      max-width: 100%;
-    }
-
-    .login-header{
-      color: #111;
-      font-weight: 600;
-    }
-
-    .form-label{
-      font-size: 0.9rem;
-    }
-
-    .form-control:focus,
-    .form-select:focus{
-      border-color: var(--accent-orange);
-      box-shadow: 0 0 0 0.15rem rgba(255,140,66,0.25);
-    }
-
-    .btn-primary{
-      background-color: var(--logo-blue);
-      border-color: var(--logo-blue);
-    }
-
-    .btn-primary:hover{
-      background-color: #0f5ca8;
-      border-color: #0f5ca8;
-    }
-
-    .btn-outline-primary{
-      color: var(--logo-blue);
-      border-color: var(--logo-blue);
-    }
-
-    .btn-outline-primary:hover{
-      background-color: var(--primary-green);
-      color: #fff;
-    }
-
-    .role-badges .badge{
-      cursor: pointer;
-      border-radius: 50px;
-      padding: 0.4rem 0.8rem;
-      font-weight: 500;
-    }
-
-    .role-badges .badge:hover{
-      background-color: rgba(44,95,45,0.09);
-      color: var(--primary-green-dark);
-    }
-
-    @media (max-width: 767.98px){
-      .hero-section{
-        padding-top: 3rem;
-      }
-      .hero-title{
-        font-size: 1.9rem;
-      }
-    }
-  </style>
+<style>
+  .navbar{
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .navbar-brand span{
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--color-primario-oscuro);
+  }
+  .logo-circle{
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-primario), var(--color-primario-oscuro));
+    border: 2px solid rgba(255,255,255,0.7);
+  }
+  .logo-circle span{
+    font-weight: 700;
+    color: #fff;
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .logo-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: #fff;
+    padding: 3px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .btn-login{
+    border-radius: 50px;
+    font-weight: 500;
+    padding: 0.45rem 1.2rem;
+  }
+  .hero-section{
+    padding: 4rem 0 3rem 0;
+  }
+  .section-title{
+    color: var(--color-texto);
+    font-weight: 600;
+  }
+  .footer-brand{
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .offcanvas-end{
+    width: 360px;
+    max-width: 100%;
+  }
+  .login-header{
+    color: var(--color-texto);
+    font-weight: 600;
+  }
+  .form-label{
+    font-size: 0.9rem;
+  }
+  .role-badges .badge{
+    cursor: pointer;
+    border-radius: 50px;
+    padding: 0.4rem 0.8rem;
+    font-weight: 500;
+  }
+  .role-badges .badge:hover{
+    background-color: rgba(91,140,110,0.09);
+    color: var(--color-primario-oscuro);
+  }
+  @media (max-width: 767.98px){
+    .hero-section{ padding-top: 3rem; }
+    .hero-title{ font-size: 1.9rem; }
+  }
+</style>
 </head>
 <body>
 
@@ -519,7 +361,7 @@
     <hr class="border-secondary mt-4">
     <div class="d-flex justify-content-between align-items-center">
       <small class="text-muted">© 2026 Maxi Abarrotes. Todos los derechos reservados.</small>
-      <small class="text-muted">Versión 1.0 - UI Maquetación</small>
+      <small class="text-muted">Versión 2.0 - UI Design</small>
     </div>
   </div>
 </footer>

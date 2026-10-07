@@ -1,0 +1,168 @@
+/* public/css/estilos.css */
+
+:root {
+  --color-fondo: #ffffff;
+  --color-superficie: #ffffff;
+  --color-primario: #5b8c6e;
+  --color-primario-oscuro: #3f6650;
+  --color-acento: #c97b4a;
+  --color-texto: #2d3436;
+  --color-texto-suave: #6b7280;
+  --color-borde: rgba(0, 0, 0, 0.06);
+  --sombra-suave: 0 6px 20px rgba(0, 0, 0, 0.04);
+  --sombra-media: 0 12px 40px rgba(0, 0, 0, 0.06);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+/* Botones */
+.btn-primary {
+  background-color: var(--color-primario);
+  border-color: var(--color-primario);
+}
+.btn-primary:hover {
+  background-color: var(--color-primario-oscuro);
+  border-color: var(--color-primario-oscuro);
+}
+.btn-outline-primary {
+  color: var(--color-primario);
+  border-color: var(--color-primario);
+}
+.btn-outline-primary:hover {
+  background-color: var(--color-primario);
+  color: #fff;
+  border-color: var(--color-primario);
+}
+
+/* Tarjetas / contenedores */
+.card-tabla,
+.hero-card,
+.registro-card {
+  background: var(--color-superficie);
+  border-radius: 14px;
+  box-shadow: var(--sombra-suave);
+  border: 1px solid var(--color-borde);
+}
+
+.metric-card {
+  background: var(--color-superficie);
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+  box-shadow: var(--sombra-suave);
+  border: 1px solid var(--color-borde);
+  height: 100%;
+}
+.metric-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-texto);
+}
+.metric-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-texto-suave);
+}
+
+/* Barra lateral del dashboard */
+.sidebar {
+  background-color: var(--color-primario-oscuro);
+  min-height: 100vh;
+  color: #e8f0ea;
+}
+.sidebar .brand {
+  color: #fff;
+  font-weight: 700;
+  padding: 1.2rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.sidebar a {
+  color: #e8f0ea;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 1.2rem;
+  border-radius: 8px;
+  margin: 0.25rem 0.7rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.sidebar a i {
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+}
+.sidebar a:hover,
+.sidebar a.active {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.topbar {
+  background: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+  padding: 0.8rem 1.5rem;
+}
+
+/* Hero (portada) */
+.hero-badge {
+  background-color: rgba(91, 140, 110, 0.1);
+  color: var(--color-texto);
+  border-radius: 30px;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.hero-title { color: var(--color-texto); font-weight: 700; }
+.hero-highlight { color: var(--color-primario); }
+.hero-description { color: var(--color-texto-suave); max-width: 480px; }
+
+/* Módulos / features */
+.feature-card {
+  background: var(--color-superficie);
+  border-radius: 16px;
+  padding: 1.4rem;
+  border: 1px solid var(--color-borde);
+  height: 100%;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sombra-suave);
+  border-color: rgba(91, 140, 110, 0.3);
+}
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background-color: rgba(91, 140, 110, 0.1);
+  color: var(--color-primario-oscuro);
+}
+
+/* Footer */
+footer {
+  margin-top: 3rem;
+  background-color: var(--color-primario-oscuro);
+  color: #e8f0ea;
+  padding: 2.5rem 0 1.5rem 0;
+}
+footer a { color: #e8f0ea; text-decoration: none; }
+footer a:hover { color: var(--color-acento); }
+
+/* Formularios */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-acento);
+  box-shadow: 0 0 0 0.15rem rgba(201, 123, 74, 0.2);
+}
