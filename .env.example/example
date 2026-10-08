@@ -1,0 +1,21 @@
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=maxiabarrotes
+DB_PORT=3306
+JWT_SECRET=pon_aqui_un_texto_largo_y_aleatorio
+
+//si no llega abrir o  le sale un error de seguridad
+//esto es lo que trendría que hacer 
+
+//git pull
+//npm install
+//Copiar .env.example como .env y llenarlo (puerto y contraseña de su MySQL, y un JWT_SECRET propio, generado con el mismo comando que use yo)
+//Importar el db maxi.sql actualizado
+//node app.js//
+
+//para que le salga el texto largto tiene que hacer lo sieguiente
+//npm install jsonwebtoken cookie-parser  (ejecuta eso sin los(//))
+// despues de eso ejecuta esto (node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+//le sale un poco de numero y lo pone donde dice JWT_SECRET=pon_aqui_un_texto_l 
+//Ese valor es como la llave maestra: no se comparte ni se sube a GitHub (tu .env ya está en el .gitignore)

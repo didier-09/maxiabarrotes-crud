@@ -60,13 +60,7 @@
       <input type="password" class="form-control" id="contrasena" minlength="6" required>
       <div class="form-text">Mínimo 6 caracteres.</div>
     </div>
-    <div class="mb-3">
-      <label for="rol" class="form-label">Tipo de usuario</label>
-      <select class="form-select" id="rol">
-        <option value="Empleado" selected>Empleado</option>
-        <option value="Administrador">Administrador</option>
-      </select>
-    </div>
+    
 
     <button type="submit" class="btn btn-primary w-100 mb-2">Registrarme</button>
     <a href="/index.html" class="btn btn-outline-secondary w-100">Volver al inicio</a>
@@ -87,11 +81,11 @@
       Nombre: document.getElementById("nombre").value,
       Email: document.getElementById("email").value,
       Contrasena: document.getElementById("contrasena").value,
-      Rol: document.getElementById("rol").value,
+      
     };
 
     try {
-      const respuesta = await fetch("/usuarios", {
+      const respuesta = await const respuesta = await fetch("/usuarios/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos),

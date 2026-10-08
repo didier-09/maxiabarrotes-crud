@@ -80,6 +80,12 @@ const FacturaController = {
     }
     res.json(factura);
   },
+
+  async listar(req, res) {
+    const facturas = await Factura.listar();
+    res.json(facturas);
+  },
+
 };
 
 module.exports = FacturaController;

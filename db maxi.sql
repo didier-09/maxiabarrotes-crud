@@ -49,3 +49,44 @@ CREATE TABLE producto (
   CONSTRAINT fk_producto_usuario
     FOREIGN KEY (IDUsuario) REFERENCES usuario(IDUsuario)
 );
+
+CREATE TABLE venta (
+  IDVenta INT PRIMARY KEY AUTO_INCREMENT,
+  IDProducto INT NOT NULL,
+  Cantidad INT NOT NULL CHECK (Cantidad > 0),
+  PrecioUnitario DECIMAL(10,2) NOT NULL CHECK (PrecioUnitario >= 0),
+  Total DECIMAL(10,2) NOT NULL CHECK (Total >= 0),
+  IDUsuario INT NOT NULL,
+  FechaVenta DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_venta_producto FOREIGN KEY (IDProducto) REFERENCES producto(IDProducto),
+  CONSTRAINT fk_venta_usuario FOREIGN KEY (IDUsuario) REFERENCES usuario(IDUsuario)
+);
+
+CREATE TABLE egreso (
+  IDEgreso INT PRIMARY KEY AUTO_INCREMENT,
+  Concepto VARCHAR(150) NOT NULL,
+  Categoria ENUM('Proveedor','Servicios','Arriendo','Nomina','Otro') NOT NULL DEFAULT 'Otro',
+  Monto DECIMAL(10,2) NOT NULL CHECK (Monto > 0),
+  IDUsuario INT NOT NULL,
+  FechaEgreso DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_egreso_usuario FOREIGN KEY (IDUsuario) REFERENCES usuario(IDUsuario)
+);
+
+CREATE TABLE factura (
+  IDFactura INT PRIMARY KEY AUTO_INCREMENT,
+  Total DECIMAL(10,2) NOT NULL DEFAULT 0,
+  IDUsuario INT NOT NULL,
+  FechaFactura DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_factura_usuario FOREIGN KEY (IDUsuario) REFERENCES usuario(IDUsuario)
+);
+
+ALTER TABLE venta
+  ADD COLUMN IDFactura INT NULL,
+  ADD CONSTRAINT fk_venta_factura FOREIGN KEY (IDFactura) REFERENCES factura(IDFactura);
+
+ALTER TABLE usuario
+MODIFY COLUMN Rol ENUM('Administrador','Empleado','Contador') NOT NULL;
+
+INSERT INTO usuario (Nombre, Email, Contrasena, Rol, Estado) VALUES
+('Empleado Prueba', 'empleado@maxiabarrotes.com', '$2b$10$CKA71xUnQrkxpqOLxLV0/em4JcFjmBFhFbT1/PVRSplqwNFAhvNWW', 'Empleado', 'Activo'),
+('Contador Prueba', 'contador@maxiabarrotes.com', '$2b$10$CKA71xUnQrkxpqOLxLV0/em4JcFjmBFhFbT1/PVRSplqwNFAhvNWW', 'Contador', 'Activo');

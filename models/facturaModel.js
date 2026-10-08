@@ -35,6 +35,17 @@ const FacturaModel = {
 
     return { ...facturas[0], lineas };
   },
+
+  async listar() {
+    const [rows] = await db.query(`
+      SELECT f.IDFactura, f.Total, f.FechaFactura, u.Nombre AS Vendedor
+      FROM factura f
+      JOIN usuario u ON f.IDUsuario = u.IDUsuario
+      ORDER BY f.FechaFactura DESC
+    `);
+    return rows;
+  },
+
 };
 
 module.exports = FacturaModel;
