@@ -31,6 +31,16 @@ const VentaModel = {
     `);
     return rows[0];
   },
+
+  async crearConFactura(IDFactura, data, conexion) {
+    const [result] = await conexion.query(
+      `INSERT INTO venta (IDProducto, Cantidad, PrecioUnitario, Total, IDUsuario, IDFactura)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [data.IDProducto, data.Cantidad, data.PrecioUnitario, data.Total, data.IDUsuario, IDFactura],
+    );
+    return result.insertId;
+  },
+
 };
 
 module.exports = VentaModel;

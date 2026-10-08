@@ -70,6 +70,19 @@ const ProductoModel = {
   async eliminar(id) {
     await db.query("DELETE FROM producto WHERE IDProducto = ?", [id]);
   },
+
+  async buscarPorCodigoBarras(codigo) {
+    const [rows] = await db.query(
+      `SELECT p.*, c.Nombre AS Categoria, pr.Nombre AS Proveedor
+       FROM producto p
+       JOIN categoria c ON p.IDCategoria = c.IDCategoria
+       JOIN proveedor pr ON p.IDProveedor = pr.IDProveedor
+       WHERE p.CodigoBarras = ?`,
+      [codigo],
+    );
+    return rows[0] || null;
+  },
+
 };
 
 module.exports = ProductoModel;

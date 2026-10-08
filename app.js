@@ -12,6 +12,8 @@ const categoriaRoutes = require("./routes/categoriaRoutes");
 const proveedorRoutes = require("./routes/proveedorRoutes");
 const usuarioRoutes = require("./routes/usuarioRoutes");
 const ventaRoutes = require("./routes/ventaRoutes");
+const egresoRoutes = require("./routes/egresoRoutes");
+const facturaRoutes = require("./routes/facturaRoutes");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -21,6 +23,8 @@ app.use("/categorias", categoriaRoutes);
 app.use("/proveedores", proveedorRoutes);
 app.use("/usuarios", usuarioRoutes);
 app.use("/ventas", ventaRoutes);
+app.use("/egresos", egresoRoutes);
+app.use("/facturas", facturaRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

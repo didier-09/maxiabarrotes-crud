@@ -7,8 +7,9 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    body{ font-family:'Inter', sans-serif; background:#f4f7f5; padding:2rem; }
-    .card-tabla{ background:#fff; border-radius:14px; padding:1.5rem; box-shadow:0 6px 20px rgba(0,0,0,0.04); }
+  <link rel="stylesheet" href="/css/estilos.css">
+  <style>
+    body{ padding:2rem; }
   </style>
 </head>
 <body>
@@ -21,27 +22,190 @@
   </div>
 </div>
 
-<div class="card-tabla">
-  <p class="text-muted mb-0">
-    <i class="bi bi-cone-striped"></i> Este módulo está en construcción.
-    Aquí se mostrará la facturación, ingresos y egresos.
-  </p>
+<div class="row g-3 mb-3">
+  <div class="col-md-4">
+    <div class="metric-card">
+      <div class="metric-label">Ingresos del mes</div>
+      <div class="metric-value text-success" id="ingresosMes">--</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="metric-card">
+      <div class="metric-label">Egresos del mes</div>
+      <div class="metric-value text-danger" id="egresosMes">--</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="metric-card">
+      <div class="metric-label">Balance neto</div>
+      <div class="metric-value" id="balanceMes">--</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-5">
+    <div class="card-tabla p-3">
+      <h5 class="mb-3">Registrar egreso</h5>
+      <div id="mensajeError" class="alert alert-danger" style="display:none;"></div>
+      <div id="mensajeExito" class="alert alert-success" style="display:none;"></div>
+
+      <div class="mb-2">
+        <label class="form-label">Concepto</label>
+        <input type="text" class="form-control" id="concepto" placeholder="Ej: Pago factura de luz">
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Categoría</label>
+        <select class="form-select" id="categoria">
+          <option value="Proveedor">Proveedor</option>
+          <option value="Servicios">Servicios</option>
+          <option value="Arriendo">Arriendo</option>
+          <option value="Nomina">Nómina</option>
+          <option value="Otro" selected>Otro</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Monto</label>
+        <input type="number" step="0.01" class="form-control" id="monto">
+      </div>
+      <button class="btn btn-primary w-100" onclick="registrarEgreso()">
+        <i class="bi bi-check-circle"></i> Registrar egreso
+      </button>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card-tabla p-3 mb-3">
+      <h5 class="mb-3">Últimos ingresos (ventas)</h5>
+      <table class="table table-hover align-middle">
+        <thead><tr><th>Producto</th><th>Total</th><th>Fecha</th></tr></thead>
+        <tbody id="tablaIngresos"></tbody>
+      </table>
+    </div>
+
+    <div class="card-tabla p-3">
+      <h5 class="mb-3">Últimos egresos</h5>
+      <table class="table table-hover align-middle">
+        <thead><tr><th>Concepto</th><th>Categoría</th><th>Monto</th><th>Fecha</th><th></th></tr></thead>
+        <tbody id="tablaEgresos"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script>
   const usuarioGuardado = sessionStorage.getItem("usuario");
-  if (!usuarioGuardado) {
-    window.location.href = "/index.html";
-  } else {
-    const usuario = JSON.parse(usuarioGuardado);
-    document.getElementById("nombreUsuario").textContent = `${usuario.Nombre} (${usuario.Rol})`;
-  }
+  if (!usuarioGuardado) window.location.href = "/index.html";
+  const usuarioActual = JSON.parse(usuarioGuardado || "{}");
+  document.getElementById("nombreUsuario").textContent = `${usuarioActual.Nombre} (${usuarioActual.Rol})`;
 
   document.getElementById("btnLogout").addEventListener("click", function (e) {
     e.preventDefault();
     sessionStorage.removeItem("usuario");
     window.location.href = "/index.html";
   });
+
+  async function cargarResumen() {
+    const [ventas, egresos] = await Promise.all([
+      fetch("/ventas").then(r => r.json()),
+      fetch("/egresos/resumen-mes").then(r => r.json()),
+    ]);
+
+    const hoy = new Date();
+    const ingresosMes = ventas
+      .filter(v => {
+        const f = new Date(v.FechaVenta);
+        return f.getMonth() === hoy.getMonth() && f.getFullYear() === hoy.getFullYear();
+      })
+      .reduce((sum, v) => sum + Number(v.Total), 0);
+
+    const totalEgresos = Number(egresos.totalEgresos);
+    const balance = ingresosMes - totalEgresos;
+
+    document.getElementById("ingresosMes").textContent = `$${ingresosMes.toLocaleString()}`;
+    document.getElementById("egresosMes").textContent = `$${totalEgresos.toLocaleString()}`;
+    document.getElementById("balanceMes").textContent = `$${balance.toLocaleString()}`;
+    document.getElementById("balanceMes").className =
+      "metric-value " + (balance >= 0 ? "text-success" : "text-danger");
+  }
+
+  async function cargarIngresos() {
+    const ventas = await fetch("/ventas").then(r => r.json());
+    const tbody = document.getElementById("tablaIngresos");
+    tbody.innerHTML = "";
+    ventas.slice(0, 10).forEach(v => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${v.Producto}</td>
+          <td>$${Number(v.Total).toLocaleString()}</td>
+          <td>${new Date(v.FechaVenta).toLocaleDateString()}</td>
+        </tr>`;
+    });
+  }
+
+  async function cargarEgresos() {
+    const egresos = await fetch("/egresos").then(r => r.json());
+    const tbody = document.getElementById("tablaEgresos");
+    tbody.innerHTML = "";
+    egresos.slice(0, 10).forEach(e => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${e.Concepto}</td>
+          <td>${e.Categoria}</td>
+          <td>$${Number(e.Monto).toLocaleString()}</td>
+          <td>${new Date(e.FechaEgreso).toLocaleDateString()}</td>
+          <td><button class="btn btn-outline-danger btn-sm" onclick="eliminarEgreso(${e.IDEgreso})"><i class="bi bi-trash"></i></button></td>
+        </tr>`;
+    });
+  }
+
+  async function registrarEgreso() {
+    const mensajeError = document.getElementById("mensajeError");
+    const mensajeExito = document.getElementById("mensajeExito");
+    mensajeError.style.display = "none";
+    mensajeExito.style.display = "none";
+
+    const datos = {
+      Concepto: document.getElementById("concepto").value,
+      Categoria: document.getElementById("categoria").value,
+      Monto: Number(document.getElementById("monto").value),
+      IDUsuario: usuarioActual.IDUsuario,
+    };
+
+    const respuesta = await fetch("/egresos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos),
+    });
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mensajeError.textContent = resultado.mensaje || "No se pudo registrar el egreso.";
+      mensajeError.style.display = "block";
+      return;
+    }
+
+    mensajeExito.textContent = "Egreso registrado correctamente.";
+    mensajeExito.style.display = "block";
+    document.getElementById("concepto").value = "";
+    document.getElementById("monto").value = "";
+
+    await cargarResumen();
+    await cargarEgresos();
+  }
+
+  async function eliminarEgreso(id) {
+    if (!confirm("¿Eliminar este egreso?")) return;
+    await fetch(`/egresos/${id}`, { method: "DELETE" });
+    await cargarResumen();
+    await cargarEgresos();
+  }
+
+  (async function init() {
+    await cargarResumen();
+    await cargarIngresos();
+    await cargarEgresos();
+  })();
 </script>
 </body>
 </html>

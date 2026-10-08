@@ -10,66 +10,107 @@
   <link rel="stylesheet" href="/css/estilos.css">
   <style>
     body{ padding:2rem; }
+    #inputCodigo{ font-size:1.2rem; }
+    @media print {
+  body * {
+    visibility: hidden;
+  }
+  #contenidoFactura, #contenidoFactura * {
+    visibility: visible;
+  }
+  #contenidoFactura {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+  .modal-header, .modal-footer {
+    display: none !important;
+  }
+}
   </style>
 </head>
 <body>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h3 class="mb-0"><i class="bi bi-cash-coin"></i> Módulo de Ventas</h3>
+  <h3 class="mb-0"><i class="bi bi-cash-coin"></i> VENTAS</h3>
   <div>
     <span id="nombreUsuario" class="text-muted me-3"></span>
     <a href="#" id="btnLogout" class="btn btn-outline-secondary btn-sm"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
   </div>
 </div>
 
-<div class="row g-3 mb-3">
-  <div class="col-md-4">
-    <div class="metric-card">
-      <div class="metric-label">Ventas hoy</div>
-      <div class="metric-value" id="ventasHoy">--</div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="metric-card">
-      <div class="metric-label">Ingresos hoy</div>
-      <div class="metric-value" id="ingresosHoy">--</div>
-    </div>
-  </div>
-</div>
+<div id="mensajeError" class="alert alert-danger" style="display:none;"></div>
 
 <div class="row g-3">
-  <div class="col-md-5">
+  <div class="col-md-6">
     <div class="card-tabla p-3">
-      <h5 class="mb-3">Registrar venta</h5>
-      <div id="mensajeError" class="alert alert-danger" style="display:none;"></div>
-      <div id="mensajeExito" class="alert alert-success" style="display:none;"></div>
+      <h5 class="mb-3">Escanear / ingresar código de barras</h5>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" id="inputCodigo" placeholder="Código de barras" autofocus>
+        <button class="btn btn-primary" onclick="agregarPorCodigo()"><i class="bi bi-plus-lg"></i> Agregar</button>
+        <button class="btn btn-outline-secondary" onclick="abrirBusqueda()"><i class="bi bi-search"></i> Buscar</button>
+      </div>
+      <div id="infoUltimoProducto" class="text-muted" style="font-size:0.9rem;"></div>
+    </div>
+  </div>
 
-      <div class="mb-2">
-        <label class="form-label">Producto</label>
-        <select class="form-select" id="idProducto"></select>
-      </div>
-      <div class="mb-2">
-        <label class="form-label">Cantidad</label>
-        <input type="number" class="form-control" id="cantidad" min="1" value="1">
-      </div>
-      <div class="mb-3 text-muted" id="infoProducto" style="font-size:0.85rem;"></div>
-      <button class="btn btn-primary w-100" onclick="registrarVenta()">
-        <i class="bi bi-check-circle"></i> Registrar venta
+  <div class="col-md-6">
+    <div class="card-tabla p-3 text-center">
+      <div class="metric-label">Total del carrito</div>
+      <div class="metric-value" id="totalCarrito" style="font-size:2.2rem;">$0</div>
+      <button class="btn btn-primary w-100 mt-2" onclick="generarFactura()">
+        <i class="bi bi-receipt"></i> Generar factura
+      </button>
+      <button class="btn btn-outline-secondary w-100 mt-2" onclick="vaciarCarrito()">
+        <i class="bi bi-x-circle"></i> Vaciar carrito
       </button>
     </div>
   </div>
+</div>
 
-  <div class="col-md-7">
-    <div class="card-tabla p-3">
-      <h5 class="mb-3">Últimas ventas</h5>
-      <table class="table table-hover align-middle">
-        <thead><tr><th>Producto</th><th>Cant.</th><th>Total</th><th>Vendedor</th><th>Fecha</th></tr></thead>
-        <tbody id="tablaVentas"></tbody>
-      </table>
+<div class="card-tabla p-3 mt-3">
+  <h5 class="mb-3">Carrito</h5>
+  <table class="table table-hover align-middle">
+    <thead><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th><th></th></tr></thead>
+    <tbody id="tablaCarrito"></tbody>
+  </table>
+</div>
+
+<!-- Buscar producto -->
+<div class="modal fade" id="modalBusqueda" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Buscar producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control mb-3" id="inputBusqueda" placeholder="Escribe el nombre del producto..." oninput="filtrarBusqueda()">
+        <div id="listaBusqueda" style="max-height:300px; overflow-y:auto;"></div>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- Factura imprimible -->
+<div class="modal fade" id="modalFactura" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Factura generada</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="contenidoFactura"></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button class="btn btn-primary" onclick="window.print()"><i class="bi bi-printer"></i> Imprimir</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   const usuarioGuardado = sessionStorage.getItem("usuario");
   if (!usuarioGuardado) window.location.href = "/index.html";
@@ -82,63 +123,165 @@
     window.location.href = "/index.html";
   });
 
-  let productos = [];
+  let carrito = [];
+  let todosLosProductos = [];
+  const modalBusqueda = new bootstrap.Modal(document.getElementById("modalBusqueda"));
 
-  async function cargarProductos() {
-    productos = await fetch("/productos").then(r => r.json());
-    const select = document.getElementById("idProducto");
-    select.innerHTML = productos
-      .map(p => `<option value="${p.IDProducto}">${p.Nombre} (stock: ${p.StockActual})</option>`)
-      .join("");
-    mostrarInfoProducto();
-  }
-
-  function mostrarInfoProducto() {
-    const id = Number(document.getElementById("idProducto").value);
-    const producto = productos.find(p => p.IDProducto === id);
-    const info = document.getElementById("infoProducto");
-    if (producto) {
-      info.textContent = `Precio: $${Number(producto.PrecioVenta).toLocaleString()} | Stock disponible: ${producto.StockActual}`;
+  async function abrirBusqueda() {
+    if (todosLosProductos.length === 0) {
+      todosLosProductos = await fetch("/productos").then(r => r.json());
     }
+    document.getElementById("inputBusqueda").value = "";
+    renderListaBusqueda(todosLosProductos);
+    modalBusqueda.show();
+    setTimeout(() => document.getElementById("inputBusqueda").focus(), 300);
   }
 
-  document.getElementById("idProducto").addEventListener("change", mostrarInfoProducto);
-
-  async function cargarResumen() {
-    const resumen = await fetch("/ventas/resumen-hoy").then(r => r.json());
-    document.getElementById("ventasHoy").textContent = resumen.totalVentas;
-    document.getElementById("ingresosHoy").textContent = `$${Number(resumen.totalIngresos).toLocaleString()}`;
+  function filtrarBusqueda() {
+    const texto = document.getElementById("inputBusqueda").value.toLowerCase();
+    const filtrados = todosLosProductos.filter(p => p.Nombre.toLowerCase().includes(texto));
+    renderListaBusqueda(filtrados);
   }
 
-  async function cargarVentas() {
-    const ventas = await fetch("/ventas").then(r => r.json());
-    const tbody = document.getElementById("tablaVentas");
+  function renderListaBusqueda(lista) {
+    const cont = document.getElementById("listaBusqueda");
+    if (lista.length === 0) {
+      cont.innerHTML = `<p class="text-muted text-center">Sin resultados.</p>`;
+      return;
+    }
+    cont.innerHTML = lista.map(p => `
+      <button class="btn btn-outline-secondary w-100 text-start mb-2 d-flex justify-content-between"
+              onclick="agregarDesdeBusqueda(${p.IDProducto})">
+        <span>${p.Nombre}</span>
+        <span class="text-muted">$${Number(p.PrecioVenta).toLocaleString()} · stock ${p.StockActual}</span>
+      </button>
+    `).join("");
+  }
+
+  function agregarDesdeBusqueda(idProducto) {
+    const producto = todosLosProductos.find(p => p.IDProducto === idProducto);
+    if (!producto) return;
+
+    const existente = carrito.find(i => i.IDProducto === idProducto);
+    if (existente) {
+      existente.Cantidad += 1;
+    } else {
+      carrito.push({
+        IDProducto: producto.IDProducto,
+        Nombre: producto.Nombre,
+        PrecioVenta: Number(producto.PrecioVenta),
+        Cantidad: 1,
+      });
+    }
+
+    renderCarrito();
+    modalBusqueda.hide();
+  }
+  const modalFactura = new bootstrap.Modal(document.getElementById("modalFactura"));
+
+  function mostrarError(msg) {
+    const div = document.getElementById("mensajeError");
+    div.textContent = msg;
+    div.style.display = "block";
+    setTimeout(() => { div.style.display = "none"; }, 4000);
+  }
+
+  async function agregarPorCodigo() {
+    const input = document.getElementById("inputCodigo");
+    const codigo = input.value.trim();
+    if (!codigo) return;
+
+    const respuesta = await fetch(`/productos/codigo/${codigo}`);
+    if (!respuesta.ok) {
+      mostrarError("Producto no encontrado con ese código.");
+      input.value = "";
+      input.focus();
+      return;
+    }
+
+    const producto = await respuesta.json();
+    const existente = carrito.find(i => i.IDProducto === producto.IDProducto);
+
+    if (existente) {
+      existente.Cantidad += 1;
+    } else {
+      carrito.push({
+        IDProducto: producto.IDProducto,
+        Nombre: producto.Nombre,
+        PrecioVenta: Number(producto.PrecioVenta),
+        Cantidad: 1,
+      });
+    }
+
+    document.getElementById("infoUltimoProducto").textContent =
+      `Agregado: ${producto.Nombre} — $${Number(producto.PrecioVenta).toLocaleString()}`;
+
+    input.value = "";
+    input.focus();
+    renderCarrito();
+  }
+
+  document.getElementById("inputCodigo").addEventListener("keypress", function (e) {
+    if (e.key === "Enter") agregarPorCodigo();
+  });
+
+  function cambiarCantidad(idProducto, delta) {
+    const item = carrito.find(i => i.IDProducto === idProducto);
+    if (!item) return;
+    item.Cantidad += delta;
+    if (item.Cantidad <= 0) {
+      carrito = carrito.filter(i => i.IDProducto !== idProducto);
+    }
+    renderCarrito();
+  }
+
+  function quitarDelCarrito(idProducto) {
+    carrito = carrito.filter(i => i.IDProducto !== idProducto);
+    renderCarrito();
+  }
+
+  function vaciarCarrito() {
+    carrito = [];
+    renderCarrito();
+  }
+
+  function renderCarrito() {
+    const tbody = document.getElementById("tablaCarrito");
     tbody.innerHTML = "";
-    ventas.slice(0, 15).forEach(v => {
+    let total = 0;
+
+    carrito.forEach(item => {
+      const subtotal = item.PrecioVenta * item.Cantidad;
+      total += subtotal;
       tbody.innerHTML += `
         <tr>
-          <td>${v.Producto}</td>
-          <td>${v.Cantidad}</td>
-          <td>$${Number(v.Total).toLocaleString()}</td>
-          <td>${v.Usuario}</td>
-          <td>${new Date(v.FechaVenta).toLocaleString()}</td>
+          <td>${item.Nombre}</td>
+          <td>$${item.PrecioVenta.toLocaleString()}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-secondary" onclick="cambiarCantidad(${item.IDProducto}, -1)">-</button>
+            <span class="mx-2">${item.Cantidad}</span>
+            <button class="btn btn-sm btn-outline-secondary" onclick="cambiarCantidad(${item.IDProducto}, 1)">+</button>
+          </td>
+          <td>$${subtotal.toLocaleString()}</td>
+          <td><button class="btn btn-sm btn-outline-danger" onclick="quitarDelCarrito(${item.IDProducto})"><i class="bi bi-trash"></i></button></td>
         </tr>`;
     });
+
+    document.getElementById("totalCarrito").textContent = `$${total.toLocaleString()}`;
   }
 
-  async function registrarVenta() {
-    const mensajeError = document.getElementById("mensajeError");
-    const mensajeExito = document.getElementById("mensajeExito");
-    mensajeError.style.display = "none";
-    mensajeExito.style.display = "none";
+  async function generarFactura() {
+    if (carrito.length === 0) {
+      mostrarError("El carrito está vacío.");
+      return;
+    }
 
     const datos = {
-      IDProducto: Number(document.getElementById("idProducto").value),
-      Cantidad: Number(document.getElementById("cantidad").value),
+      items: carrito.map(i => ({ IDProducto: i.IDProducto, Cantidad: i.Cantidad })),
       IDUsuario: usuarioActual.IDUsuario,
     };
 
-    const respuesta = await fetch("/ventas", {
+    const respuesta = await fetch("/facturas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos),
@@ -146,24 +289,52 @@
     const resultado = await respuesta.json();
 
     if (!respuesta.ok) {
-      mensajeError.textContent = resultado.mensaje || "No se pudo registrar la venta.";
-      mensajeError.style.display = "block";
+      mostrarError(resultado.mensaje || "No se pudo generar la factura.");
       return;
     }
 
-    mensajeExito.textContent = `Venta registrada por $${Number(resultado.Total).toLocaleString()}`;
-    mensajeExito.style.display = "block";
-
-    await cargarProductos();
-    await cargarResumen();
-    await cargarVentas();
+    await mostrarFactura(resultado.IDFactura);
+    vaciarCarrito();
   }
 
-  (async function init() {
-    await cargarProductos();
-    await cargarResumen();
-    await cargarVentas();
-  })();
+ async function mostrarFactura(idFactura) {
+    const factura = await fetch(`/facturas/${idFactura}`).then(r => r.json());
+
+    let filas = factura.lineas.map(l => `
+      <tr>
+        <td>${l.Producto}</td>
+        <td>${l.Cantidad}</td>
+        <td>$${Number(l.PrecioUnitario).toLocaleString()}</td>
+        <td>$${Number(l.Total).toLocaleString()}</td>
+      </tr>
+    `).join("");
+
+    const subtotal = Number(factura.Total);
+    const iva = subtotal * 0.19;
+    const totalConIva = subtotal + iva;
+
+    document.getElementById("contenidoFactura").innerHTML = `
+      <div class="mb-2"><strong>Maxi Abarrotes</strong></div>
+      <div class="text-muted mb-2" style="font-size:0.85rem;">
+        Factura N° ${factura.IDFactura}<br>
+        Fecha: ${new Date(factura.FechaFactura).toLocaleString()}<br>
+        Vendedor: ${factura.Vendedor}
+      </div>
+      <table class="table table-sm">
+        <thead><tr><th>Producto</th><th>Cant.</th><th>P. Unit.</th><th>Subtotal</th></tr></thead>
+        <tbody>${filas}</tbody>
+      </table>
+      <div class="text-end" style="font-size:0.95rem;">
+        <div>Subtotal: $${subtotal.toLocaleString(undefined, {minimumFractionDigits:2})}</div>
+        <div>IVA (19%): $${iva.toLocaleString(undefined, {minimumFractionDigits:2})}</div>
+        <div class="fs-5"><strong>Total: $${totalConIva.toLocaleString(undefined, {minimumFractionDigits:2})}</strong></div>
+      </div>
+    `;
+
+    modalFactura.show();
+  }
+
+  renderCarrito();
 </script>
 </body>
 </html>

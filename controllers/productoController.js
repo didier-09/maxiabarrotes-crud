@@ -125,6 +125,15 @@ const ProductoController = {
       res.status(500).json({ mensaje: "Error al eliminar el producto." });
     }
   },
+
+    async buscarPorCodigo(req, res) {
+    const producto = await Producto.buscarPorCodigoBarras(req.params.codigo);
+    if (!producto) {
+      return res.status(404).json({ mensaje: "Producto no encontrado con ese código." });
+    }
+    res.json(producto);
+  },
+
 };
 
 module.exports = ProductoController;
