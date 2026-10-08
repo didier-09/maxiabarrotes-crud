@@ -14,8 +14,9 @@ const loginLimiter = rateLimit({
 });
 
 const registroLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
+  windowMs: 5 * 60 * 1000,
   max: 10,
+  skipSuccessfulRequests: true,
   message: { mensaje: "Demasiados registros desde esta conexión. Intenta más tarde." },
   standardHeaders: true,
   legacyHeaders: false,

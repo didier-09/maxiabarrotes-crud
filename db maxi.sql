@@ -85,8 +85,55 @@ ALTER TABLE venta
   ADD CONSTRAINT fk_venta_factura FOREIGN KEY (IDFactura) REFERENCES factura(IDFactura);
 
 ALTER TABLE usuario
-MODIFY COLUMN Rol ENUM('Administrador','Empleado','Contador') NOT NULL;
+MODIFY COLUMN Rol ENUM('Administrador','Empleado','Contador') NOT NULL,
 
 INSERT INTO usuario (Nombre, Email, Contrasena, Rol, Estado) VALUES
 ('Empleado Prueba', 'empleado@maxiabarrotes.com', '$2b$10$CKA71xUnQrkxpqOLxLV0/em4JcFjmBFhFbT1/PVRSplqwNFAhvNWW', 'Empleado', 'Activo'),
 ('Contador Prueba', 'contador@maxiabarrotes.com', '$2b$10$CKA71xUnQrkxpqOLxLV0/em4JcFjmBFhFbT1/PVRSplqwNFAhvNWW', 'Contador', 'Activo');
+
+CREATE TABLE factura (
+  IDFactura INT PRIMARY KEY AUTO_INCREMENT,
+  Total DECIMAL(10,2) NOT NULL DEFAULT 0,
+  IDUsuario INT NOT NULL,
+  FechaFactura DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_factura_usuario FOREIGN KEY (IDUsuario) REFERENCES usuario(IDUsuario)
+);
+
+CREATE TABLE venta (
+  IDVenta INT PRIMARY KEY AUTO_INCREMENT,
+  IDProducto INT NOT NULL,
+  Cantidad INT NOT NULL CHECK (Cantidad > 0),
+  PrecioUnitario DECIMAL(10,2) NOT NULL CHECK (PrecioUnitario >= 0),
+  Total DECIMAL(10,2) NOT NULL CHECK (Total >= 0),
+  IDUsuario INT NOT NULL,
+  IDFactura INT NULL,
+  FechaVenta DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_venta_producto FOREIGN KEY (IDProducto) REFERENCES producto(IDProducto),
+  CONSTRAINT fk_venta_usuario FOREIGN KEY (IDUsuario) REFERENCES usuario(IDUsuario),
+  CONSTRAINT fk_venta_factura FOREIGN KEY (IDFactura) REFERENCES factura(IDFactura)
+);
+
+CREATE TABLE egreso (
+  IDEgreso INT PRIMARY KEY AUTO_INCREMENT,
+  Concepto VARCHAR(150) NOT NULL,
+  Categoria ENUM('Proveedor','Servicios','Arriendo','Nomina','Otro') NOT NULL DEFAULT 'Otro',
+  Monto DECIMAL(10,2) NOT NULL CHECK (Monto > 0),
+  IDUsuario INT NOT NULL,
+  FechaEgreso DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_egreso_usuario FOREIGN KEY (IDUsuario) REFERENCES usuario(IDUsuario)
+);
+
+-- Usuarios de prueba por rol (contraseña: admin123)
+INSERT INTO usuario (Nombre, Email, Contrasena, Rol, Estado) VALUES
+('Empleado Prueba', 'empleado@maxiabarrotes.com', '$2b$10$CKA71xUnQrkxpqOLxLV0/em4JcFjmBFhFbT1/PVRSplqwNFAhvNWW', 'Empleado', 'Activo'),
+('Contador Prueba', 'contador@maxiabarrotes.com', '$2b$10$CKA71xUnQrkxpqOLxLV0/em4JcFjmBFhFbT1/PVRSplqwNFAhvNWW', 'Contador', 'Activo');
+
+-- Datos base para poder crear productos desde el inicio
+INSERT INTO categoria (Nombre, Descripcion, Estado) VALUES
+('Abarrotes', 'Productos básicos de despensa', 'Activa'),
+('Bebidas', 'Gaseosas, jugos y bebidas en general', 'Activa'),
+('Lácteos', 'Leche, queso, yogurt', 'Activa');
+
+INSERT INTO proveedor (Nombre, Contacto, Telefono, Email, Direccion, NIT) VALUES
+('Distribuidora El Sol', 'Carlos Ramirez', '3001234567', 'contacto@elsol.com', 'Calle 10 #5-20', '900123456'),
+('Alimentos del Valle', 'Ana Torres', '3109876543', 'ventas@alimentosdelvalle.com', 'Av Principal #45', '900654321');
